@@ -1,0 +1,10 @@
+[build-system]
+requires = [ "setuptools>=40.8.0" ]
+
+[project]
+name = "sammaws"
+dynamic = ["version"]
+dependencies = [
+	"boto3"
+	]
+
