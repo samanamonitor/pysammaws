@@ -21,9 +21,14 @@ class AwsAppstreamStackFleet:
 		return self
 
 	def __next__(self):
-		stack = next(self.iter)
-		q = AwsAppstreamQuery("list_associated_fleets", client=self.client, StackName=stack['Name'])
-		return { "StackName": stack['Name'], "FleetName": next(iter(q)) }
+		while True:
+			stack = next(self.iter)
+			q = AwsAppstreamQuery("list_associated_fleets", client=self.client, StackName=stack['Name'])
+			try:
+				fleet = next(iter(q))
+			except StopIteration:
+				continue
+			return { "StackName": stack['Name'], "FleetName": next(iter(q)) }
 
 class AwsAppstreamSessions:
 	def __init__(self, **kwargs):
