@@ -49,7 +49,7 @@ class AwsQuery:
 		self._query_name = query_name
 		self._func = getattr(self.client, self._query_name)
 		self._object_name = self._service_queries[self._query_name]
-		self._log_level = kwargs.pop("log_level", "WARNING")
+		self._log_level = self._kwargs.pop("log_level", "WARNING")
 		log.setLevel(self._log_level)
 
 	def _get_data(self):
