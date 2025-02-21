@@ -35,7 +35,7 @@ class AwsQuery:
 	_service_name = ""
 	def __init__(self, query_name, client=None,
 			aws_access_key_id=None, aws_secret_access_key=None,
-			aws_session_token=None, region_name='us-east-1', **kwargs):
+			aws_session_token=None, region_name='us-east-1', log_level="WARNING", **kwargs):
 		if client is None:
 			self.client = boto3.client(self._service_name, aws_access_key_id=None, 
 				aws_secret_access_key=None, aws_session_token=None,
@@ -49,8 +49,7 @@ class AwsQuery:
 		self._query_name = query_name
 		self._func = getattr(self.client, self._query_name)
 		self._object_name = self._service_queries[self._query_name]
-		self._log_level = self._kwargs.pop("log_level", "WARNING")
-		log.setLevel(self._log_level)
+		log.setLevel(log_level)
 
 	def _get_data(self):
 		log.debug("before %s", self._query_name)
