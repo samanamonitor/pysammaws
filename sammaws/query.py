@@ -53,7 +53,11 @@ class AwsQuery:
 
 	def _get_data(self):
 		log.debug("before %s", self._query_name)
-		self._first_dataset = self._func(**self._kwargs)
+		try:
+			self._first_dataset = self._func(**self._kwargs)
+		except Exception as e:
+			log.error("Error class: %s", e.__class__.__name__)
+			raise
 		log.debug("after %s", self._query_name)
 		if "NextToken" in self._first_dataset:
 			self._kwargs["NextToken"] = self._first_dataset.get("NextToken")
