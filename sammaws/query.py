@@ -1,6 +1,8 @@
 import boto3
 from botocore.client import BaseClient
+from botocore.exceptions import ClientError
 import logging
+import time
 
 log = logging.getLogger(__name__)
 
@@ -54,9 +56,10 @@ class AwsQuery:
 	def _get_data(self):
 		log.debug("before %s", self._query_name)
 		try:
+			time.sleep(1)
 			self._first_dataset = self._func(**self._kwargs)
-		except Exception as e:
-			log.error("Error class: %s", e.__class__.__name__)
+		except ClientError as e:
+			log.error("Error class: %s, %s", e.__class__.__name__, str(e))
 			raise
 		log.debug("after %s", self._query_name)
 		if "NextToken" in self._first_dataset:
