@@ -16,19 +16,19 @@ class AwsAppstreamQuery(AwsQuery):
 
 class AwsAppstreamStackFleet:
 	def __init__(self, **kwargs):
-		self.q = AwsAppstreamQuery("describe_stacks", **kwargs)
-		self.client = self.q.client
+		self.stack_q = AwsAppstreamQuery("describe_stacks", **kwargs)
+		self.client = self.stack_q.client
 
 	def __iter__(self):
-		self.iter = iter(self.q)
+		self.stack_iter = iter(self.stack_q)
 		return self
 
 	def __next__(self):
 		while True:
-			stack = next(self.iter)
-			q = AwsAppstreamQuery("list_associated_fleets", client=self.client, StackName=stack['Name'])
+			stack = next(self.stack_iter)
+			assoc_q = AwsAppstreamQuery("list_associated_fleets", client=self.client, StackName=stack['Name'])
 			try:
-				fleet = next(iter(q))
+				fleet = next(iter(assoc_q))
 			except StopIteration:
 				log.debug("AwsAppstreamStackFleet: no fleets in stack %s", stack['Name'])
 				continue
