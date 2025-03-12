@@ -58,6 +58,7 @@ class AwsQuery:
 	def _get_data(self):
 		log.debug("before %s", self._query_name)
 		try:
+			log.debug("sleeping %f seconds", self._query_throttle)
 			time.sleep(self._query_throttle)
 			self._first_dataset = self._func(**self._kwargs)
 		except ClientError as e:
