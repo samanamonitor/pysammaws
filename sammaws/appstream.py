@@ -1,4 +1,7 @@
 from .query import AwsQuery
+import logging
+
+log = logging.getLogger(__name__)
 
 class AwsAppstreamQuery(AwsQuery):
 	_service_queries = {
@@ -27,8 +30,11 @@ class AwsAppstreamStackFleet:
 			try:
 				fleet = next(iter(q))
 			except StopIteration:
+				log.debug("AwsAppstreamStackFleet: no fleets in stack %s", stack['Name'])
 				continue
-			return { "StackName": stack['Name'], "FleetName": next(iter(q)) }
+			out = { "StackName": stack['Name'], "FleetName": fleet }
+			log.debug(str(out))
+			return out
 
 class AwsAppstreamSessions:
 	def __init__(self, **kwargs):
