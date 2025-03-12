@@ -15,9 +15,10 @@ class AwsAppstreamQuery(AwsQuery):
 	_service_name = "appstream"
 
 class AwsAppstreamStackFleet:
-	def __init__(self, **kwargs):
-		self.stack_q = AwsAppstreamQuery("describe_stacks", **kwargs)
+	def __init__(self, query_throttle=0.1, **kwargs):
+		self.stack_q = AwsAppstreamQuery("describe_stacks", query_throttle=query_throttle, **kwargs)
 		self.client = self.stack_q.client
+		self._query_throttle = query_throttle
 
 	def __iter__(self):
 		self.stack_iter = iter(self.stack_q)
@@ -26,7 +27,8 @@ class AwsAppstreamStackFleet:
 	def __next__(self):
 		while True:
 			stack = next(self.stack_iter)
-			assoc_q = AwsAppstreamQuery("list_associated_fleets", client=self.client, StackName=stack['Name'])
+			assoc_q = AwsAppstreamQuery("list_associated_fleets", client=self.client, StackName=stack['Name'], 
+				query_throttle=self._query_throttle)
 			try:
 				fleet = next(iter(assoc_q))
 			except StopIteration:
@@ -37,10 +39,11 @@ class AwsAppstreamStackFleet:
 			return out
 
 class AwsAppstreamSessions:
-	def __init__(self, **kwargs):
-		self.q = AwsAppstreamStackFleet(**kwargs)
+	def __init__(self, query_throttle=0.1, **kwargs):
+		self.q = AwsAppstreamStackFleet(query_throttle=query_throttle, **kwargs)
 		self.client = self.q.client
 		self.session_iter = iter([])
+		self._query_throttle = query_throttle
 
 	def __iter__(self):
 		self.stack_fleet_iter = iter(self.q)
@@ -53,7 +56,7 @@ class AwsAppstreamSessions:
 			while True:
 				stack_fleet = next(self.stack_fleet_iter)
 				sessions = AwsAppstreamQuery("describe_sessions", client=self.client,
-					**stack_fleet)
+					query_throttle=self._query_throttle, **stack_fleet)
 
 				self.session_iter = iter(sessions)
 				try:
