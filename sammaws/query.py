@@ -51,8 +51,9 @@ class AwsQuery:
 		self._query_name = query_name
 		self._func = getattr(self.client, self._query_name)
 		self._object_name = self._service_queries[self._query_name]
-		self._query_throttle = query_throttle
+		self._query_throttle = float(query_throttle)
 		log.setLevel(log_level)
+		log.debug("query_name=%s query_throttle=%f", query_name, query_throttle)
 
 	def _get_data(self):
 		log.debug("before %s", self._query_name)
